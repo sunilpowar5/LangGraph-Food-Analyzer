@@ -34,7 +34,10 @@ def Identify_foods(state: CalorieState):
                 example: if image has bananas you should list how many 
                 bananas are there and their size etc which required to 
                 find out the calories of the food items. Just list the
-                food items.
+                food items.If the food items in image is not clear, suggest
+                user to upload a image with clear food items.If image does not
+                have a food item ask user to upload a food image and explain 
+                the user why it is not a food image. 
             """
     response = client.models.generate_content(
         model='gemini-2.5-flash',
@@ -64,7 +67,8 @@ def nutritionix_fetching(query: str) -> dict:
 agent = create_react_agent(
     model=llm,
     tools=[nutritionix_fetching],
-    prompt="Get the calories and proteins for the given input food from nutritionix website"
+    prompt="""Get the calories and proteins for the given input 
+            food from nutritionix website. Don't add extra information"""
 )
 
 def fetch_calories(state: CalorieState):
@@ -74,8 +78,13 @@ def fetch_calories(state: CalorieState):
     """
     food_query = state['food_items']
     
+    prompt = f"""list the calories and proteins for each food item and 
+                finally give total calories and proteins of {food_query}
+                 don't add extra information like how you got the results.
+                retrive only the calories and proteins"""
+
     response = agent.invoke({
-        'messages': [("human", f"list the calories and proteins for each food item and finally give total calories and proteins of {food_query}?")]
+        'messages': [("human", prompt)]
     })
     
     final_response = response['messages'][-1].content
