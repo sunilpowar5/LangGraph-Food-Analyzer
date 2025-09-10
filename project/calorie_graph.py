@@ -33,11 +33,12 @@ def Identify_foods(state: CalorieState):
                 Identify the food items in this image and list them clearly
                 example: if image has bananas you should list how many 
                 bananas are there and their size etc which required to 
-                find out the calories of the food items. Just list the
+                find out the calories and proteins of the food items. Just list the
                 food items.If the food items in image is not clear, suggest
                 user to upload a image with clear food items.If image does not
                 have a food item ask user to upload a food image and explain 
                 the user why it is not a food image. 
+                output should have categorized food items and how many are there.
             """
     response = client.models.generate_content(
         model='gemini-2.5-flash',
@@ -80,8 +81,9 @@ def fetch_calories(state: CalorieState):
     
     prompt = f"""list the calories and proteins for each food item and 
                 finally give total calories and proteins of {food_query}
-                 don't add extra information like how you got the results.
-                retrive only the calories and proteins"""
+                don't add extra information like how you got the results.
+                retrive only the calories and proteins.For each food item
+                output in the bullet list format"""
 
     response = agent.invoke({
         'messages': [("human", prompt)]
